@@ -24,9 +24,16 @@
 	});
 
   AFRAME.registerComponent('trigger-on-rotate', {
-    schema: {type: 'string'},
-
     init: function () {
+
+      var difference = function (a, b) {         
+        return Math.abs(a - b); 
+      }
+      
+      var player = document.getElementById('player')
+      var previousRotation = 0;
+      var move = true;
+
       this.debounce = function(func, wait, immediate) {
       var timeout;
         return function() {
@@ -43,16 +50,29 @@
       };
 
       this.myEfficientFn = this.debounce(function(evt) {
-        console.log(this.getAttribute('rotation'));
-      }, 50);
+        var currentRotation = this.getAttribute('rotation');
+ 
+        var rotationDifference = difference(previousRotation, currentRotation.y);
+
+        if(rotationDifference > 20){
+          if(move){
+           player.setAttribute('listener', 'stepFactor', 0.00);
+           move = false;
+          } else {
+            player.setAttribute('listener', 'stepFactor', 0.01);
+            move = true;
+          }
+        } 
+        previousRotation = currentRotation.y;
+      }, 150);
     
       this.el.addEventListener('componentchanged', this.myEfficientFn);
-    }
+    },
   });
 
 </script>
 <a-scene>
-  <a-camera  listener="stepFactor:0.01"  trigger-on-rotate position="0 0 30">
+  <a-camera  id="player" listener="stepFactor:0.01"  trigger-on-rotate position="0 0 30">
     <a-entity id="cursor" cursor="fuse: true;fuseTimeout:500"
     	material="color:black"
     	geometry="primitive:ring"
