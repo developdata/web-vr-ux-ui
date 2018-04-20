@@ -1,0 +1,72 @@
+
+<!-- https://stackoverflow.com/questions/43400119/continuously-moving-aframe-camera-into-direction-of-view  -->
+<html>  
+<head>
+<title>Camera Movement</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/0.5.0/aframe.min.js"></script>
+<script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v3.7.0/dist/aframe-extras.min.js"></script>
+<!DOCTYPE html> 
+</head>
+<body>
+<script type="text/javascript">
+      function debounce(func, wait, immediate) {
+        var timeout;
+        return function() {
+          var context = this, args = arguments;
+          var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          var callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
+        };
+      };
+
+      var myEfficientFn = debounce(function(evt) {
+        console.log(this)
+      }, 250);
+	AFRAME.registerComponent("listener", {
+		schema : 
+		{
+			stepFactor : {
+				type : "number",
+				default : 0.05
+			}
+		},
+		tick : function()
+		{	this.el.components.camera.camera.parent.position.add(this.el.components.camera.camera.getWorldDirection().multiplyScalar(this.data.stepFactor));
+		}
+	});
+
+      AFRAME.registerComponent('trigger-on-rotate', {
+        schema: {type: 'string'},
+
+        init: function () {
+          this.el.addEventListener('componentchanged', myEfficientFn);
+          // this.el.addEventListener('componentchanged', function (evt) {
+          //   console.log(this)
+          //   if (evt.detail.name !== 'rotation') { 
+          //     return; 
+          //   } else {
+          //     var rot = this.getAttribute('rotation');
+          //   }
+
+          // });
+        }
+      });
+</script>
+<a-scene>
+  <a-camera  listener="stepFactor:0.01" trigger-on-rotate position="0 0 30">
+    <a-entity id="cursor" cursor="fuse: true;fuseTimeout:500"
+    	material="color:black"
+    	geometry="primitive:ring"
+    	position="0 0 -1"
+    	scale="0.01 0.01 0.01"
+    ></a-entity>
+  </a-camera>
+  <a-grid></a-grid>
+<a-box position="0 1 -2" color="blue" move eve></a-box>
+</body>
+</html>
