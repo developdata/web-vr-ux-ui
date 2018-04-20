@@ -9,24 +9,7 @@
 </head>
 <body>
 <script type="text/javascript">
-      function debounce(func, wait, immediate) {
-        var timeout;
-        return function() {
-          var context = this, args = arguments;
-          var later = function() {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-          };
-          var callNow = immediate && !timeout;
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-          if (callNow) func.apply(context, args);
-        };
-      };
 
-      var myEfficientFn = debounce(function(evt) {
-        console.log(this)
-      }, 250);
 	AFRAME.registerComponent("listener", {
 		schema : 
 		{
@@ -40,25 +23,36 @@
 		}
 	});
 
-      AFRAME.registerComponent('trigger-on-rotate', {
-        schema: {type: 'string'},
+  AFRAME.registerComponent('trigger-on-rotate', {
+    schema: {type: 'string'},
 
-        init: function () {
-          this.el.addEventListener('componentchanged', myEfficientFn);
-          // this.el.addEventListener('componentchanged', function (evt) {
-          //   console.log(this)
-          //   if (evt.detail.name !== 'rotation') { 
-          //     return; 
-          //   } else {
-          //     var rot = this.getAttribute('rotation');
-          //   }
+    init: function () {
+      this.debounce = function(func, wait, immediate) {
+      var timeout;
+        return function() {
+          var context = this, args = arguments;
+          var later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+          };
+          var callNow = immediate && !timeout;
+          clearTimeout(timeout);
+          timeout = setTimeout(later, wait);
+          if (callNow) func.apply(context, args);
+        };
+      };
 
-          // });
-        }
-      });
+      this.myEfficientFn = this.debounce(function(evt) {
+        console.log(this.getAttribute('rotation'));
+      }, 50);
+    
+      this.el.addEventListener('componentchanged', this.myEfficientFn);
+    }
+  });
+
 </script>
 <a-scene>
-  <a-camera  listener="stepFactor:0.01" trigger-on-rotate position="0 0 30">
+  <a-camera  listener="stepFactor:0.01"  trigger-on-rotate position="0 0 30">
     <a-entity id="cursor" cursor="fuse: true;fuseTimeout:500"
     	material="color:black"
     	geometry="primitive:ring"
