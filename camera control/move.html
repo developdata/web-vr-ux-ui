@@ -49,7 +49,7 @@
         };
       };
 
-      this.myEfficientFn = this.debounce(function(evt) {
+      this.myEfficientFn = this.debounce(function() {
         var currentRotation = this.getAttribute('rotation');
  
         var rotationDifference = difference(previousRotation, currentRotation.y);
