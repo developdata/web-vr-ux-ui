@@ -1,86 +1,80 @@
-
-<!-- https://stackoverflow.com/questions/43400119/continuously-moving-aframe-camera-into-direction-of-view  -->
-<html>  
+<!DOCTYPE html>
+<html>
 <head>
-<title>Camera Movement</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>interaction</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aframe/0.5.0/aframe.min.js"></script>
 <script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v3.7.0/dist/aframe-extras.min.js"></script>
-<!DOCTYPE html> 
 </head>
 <body>
-<script type="text/javascript">
 
-	AFRAME.registerComponent("listener", {
-		schema : 
-		{
-			stepFactor : {
-				type : "number",
-				default : 0.05
-			}
-		},
-		tick : function()
-		{	this.el.components.camera.camera.parent.position.add(this.el.components.camera.camera.getWorldDirection().multiplyScalar(this.data.stepFactor));
-		}
-	});
+<script>
 
-  AFRAME.registerComponent('trigger-on-rotate', {
-    init: function () {
+// var countdown = 0;
 
-      var difference = function (a, b) {         
-        return Math.abs(a - b); 
+  AFRAME.registerComponent("listener", {
+    schema : 
+    {
+      stepFactor : {
+        type : "number",
+        default : 0.05
       }
-      
-      var player = document.getElementById('player')
-      var previousRotation = 0;
-      var move = true;
-
-      this.debounce = function(func, wait, immediate) {
-      var timeout;
-        return function() {
-          var context = this, args = arguments;
-          var later = function() {
-            timeout = null;
-            if (!immediate) func.apply(context, args);
-          };
-          var callNow = immediate && !timeout;
-          clearTimeout(timeout);
-          timeout = setTimeout(later, wait);
-          if (callNow) func.apply(context, args);
-        };
-      };
-
-      this.myEfficientFn = this.debounce(function() {
-        var currentRotation = this.getAttribute('rotation');
- 
-        var rotationDifference = difference(previousRotation, currentRotation.y);
-
-        if(rotationDifference > 20){
-          if(move){
-           player.setAttribute('listener', 'stepFactor', 0.00);
-           move = false;
-          } else {
-            player.setAttribute('listener', 'stepFactor', 0.01);
-            move = true;
-          }
-        } 
-        previousRotation = currentRotation.y;
-      }, 150);
-    
-      this.el.addEventListener('componentchanged', this.myEfficientFn);
     },
+    tick : function()
+    { 
+      this.el.components.camera.camera.parent.position.add(this.el.components.camera.camera.getWorldDirection().multiplyScalar(this.data.stepFactor));
+    }
+  });
+
+  AFRAME.registerComponent('rotation-reader', {
+          
+    init: function(){
+        var difference = function (a, b) { return Math.abs(a - b); }
+        var player = this.el;
+        var self = this;
+        this.initialRotation = 0;
+        this.move = true;
+        self.countdown = 0;
+
+        this.controlCameraFn = function() {
+          var currentRotation = player.getAttribute('rotation');
+          var rotationDifference = difference(this.initialRotation, currentRotation.y);
+          
+          if((rotationDifference > 5) && (self.countdown === 0)){
+            self.countdown = 15;
+            if(this.move){
+             player.setAttribute('listener', 'stepFactor', 0.00);
+             this.move = false;
+            } else {
+              player.setAttribute('listener', 'stepFactor', 0.01);
+              this.move = true;
+            }
+        } 
+        this.initialRotation = currentRotation.y;
+      };
+    },
+    tick: function () {
+      if(this.countdown > 0){
+        this.countdown = this.countdown - 1;
+      }
+      this.el.addEventListener('componentchanged', this.controlCameraFn);
+    }
   });
 
 </script>
 <a-scene>
-  <a-camera  id="player" listener="stepFactor:0.01"  trigger-on-rotate position="0 0 30">
-    <a-entity id="cursor" cursor="fuse: true;fuseTimeout:500"
-    	material="color:black"
-    	geometry="primitive:ring"
-    	position="0 0 -1"
-    	scale="0.01 0.01 0.01"
-    ></a-entity>
-  </a-camera>
+    <a-entity id="player"
+              camera
+              listener="stepFactor:0.01"
+              rotation-reader
+              universal-controls="movementControls: gamepad, keyboard"    
+              position="0 1.8 30"
+    >
+    </a-entity>
   <a-grid></a-grid>
 <a-box position="0 1 -2" color="blue" move eve></a-box>
+</a-scene>
+
 </body>
 </html>
