@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>interaction</title>
+<script src="../aframe.js"></script>
+</head>
+<body>
+
+<script>
+  AFRAME.registerComponent('audio-click', {
+    init: function () {
+      var isPlaying = false;
+      this.el.addEventListener('click', function (evt) {
+        if(isPlaying){
+          console.log(isPlaying);
+          this.components.sound.stopSound();
+          isPlaying = false; 
+        } else {
+          console.log(isPlaying);
+          this.components.sound.playSound();
+          isPlaying = true;
+        }
+      });
+    }
+  });
+</script>
+
+  <a-scene>
+    <a-assets>
+      <audio id="birdsong" src="./sounds/nature1.mp3" preload="auto"></audio>
+    </a-assets>
+      <a-entity light="intensity:0.8; castShadow:true" position="1.132 3.844 2.525">
+      </a-entity>
+
+       <a-entity light="intensity:0.8;castShadow:true" position="1.769 2.309 -2.747">
+      </a-entity>
+      <a-box 
+        color = "#8BC6C0" position = "-1 0.5 -3"
+        sound="src: #birdsong; loop: true""
+        audio-click>
+      </a-box>
+      
+      <a-entity
+        geometry="primitive: box" 
+        material="color: #892D34"
+        position="1 0.5 -3"
+        shadow="receive: false; cast: true"
+      >
+      </a-entity>
+    
+      <a-plane height="200" width="200" color="#8AAA4B" rotation="-90 0 0" shadow="receive: true"></a-plane>
+      
+      <a-sky color="blue" radius="100"></a-sky> 
+
+      <a-entity camera look-controls position="0 2 1.5">
+        <a-entity cursor="fuse: true; fuseTimeout: 500"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+            material="color: white; shader: flat">
+        </a-entity>
+
+      </a-entity>
+  </a-scene>
+
+</body>
+</html>
+
+
+
