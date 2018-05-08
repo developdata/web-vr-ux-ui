@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>interaction</title>
+<script src="../aframe.js"></script>
+<script src="//cdn.rawgit.com/donmccurdy/aframe-extras/v3.7.0/dist/aframe-extras.min.js"></script>
+
+</head>
+<body>
+
+<script>
+
+  AFRAME.registerComponent("listener", {
+    schema : 
+    {
+      stepFactor : {
+        type : "number",
+        default : 0.05
+      }
+    },
+    tick : function()
+    { 
+      this.el.components.camera.camera.parent.position.add(this.el.components.camera.camera.getWorldDirection().multiplyScalar(this.data.stepFactor));
+    }
+  });
+
+
+  AFRAME.registerComponent('near', {
+  schema: {
+    xPos: {type: 'number', default: 1},
+    zPos: {type: 'number', default: 1},
+  },
+  init: function () {
+    var mainX = this.data.xPos;
+    var mainZ = this.data.zPos;
+
+    // var currentX = this.el.getAttribute('position').x;
+    // var currentZ = this.el.getAttribute('position').z;
+
+
+    this.xzArray = [mainX - 2, mainX + 2, mainZ - 2, mainZ + 2];
+
+ 
+    // if(((this.xzArray[0] < currentX) && (this.xzArray[1] > currentX)) ||  ((this.xzArray[2] < currentZ) && (this.xzArray[3] > currentZ))){
+    //   console.log('within distance');
+    // } else {
+    //   console.log('not');
+    // }
+
+  }, 
+  tick: function(){
+    var currentX = this.el.components.camera.camera.parent.position.x;
+    var currentZ = this.el.components.camera.camera.parent.position.z;
+
+
+
+        if(((this.xzArray[0] < currentX) && (this.xzArray[1] > currentX)) ||  ((this.xzArray[2] < currentZ) && (this.xzArray[3] > currentZ))){
+      console.log('within distance');
+    } else {
+      console.log('not');
+    }
+  }
+
+  });
+</script>
+
+  <a-scene>
+<!--     <a-assets>
+      <audio id="birdsong" src="./sounds/nature1.mp3" preload="auto"></audio>
+    </a-assets> -->
+     <a-entity light="intensity:0.5;castShadow:true" position="1.769 3.091 4.427">
+      </a-entity>
+
+       <a-entity light="intensity:0.8;castShadow:true" position="1.769 2.309 -2.747">
+      </a-entity>
+
+      <!-- <a-box 
+        color = "#8BC6C0" position = "-1 0.5 -3"
+        sound="src: #birdsong; loop: true">
+      </a-box> -->
+      
+      <a-entity
+      id="camera"
+        geometry="primitive: box" 
+        width="1 1 1"
+        material="color: #ED5276"
+        position="2 0.5 2"
+        shadow="receive: false; cast: true"
+      >
+      </a-entity>
+    
+      <a-plane height="200" width="200" color="#F4CDA5" rotation="-90 0 0" shadow="receive: true"></a-plane>
+      
+      <a-sky color="#3C989E" radius="100"></a-sky>
+
+
+      <a-entity id="player"
+          camera
+          listener="stepFactor:0.01"
+          near="xPos: 2; zPos: 2;" 
+          rotation-reader
+          universal-controls="movementControls: gamepad, keyboard"    
+          position="0 1.8 10"
+      >
+        <a-entity cursor="fuse: true; fuseTimeout: 500"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+            material="color: white; shader: flat">
+        </a-entity>
+    </a-entity>
+
+<!--       <a-entity 
+        camera
+        listener="stepFactor:0.01" 
+        near="xPos: 2; zPos: 2;" 
+        position="0 1 -1"
+      >
+        <a-entity cursor="fuse: true; fuseTimeout: 500"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+            material="color: white; shader: flat">
+        </a-entity>
+
+      </a-entity> -->
+
+<!--       <a-entity camera look-controls near="xPos: 2; zPos: 2;" position="0 1 1">
+        <a-entity cursor="fuse: true; fuseTimeout: 500"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+            material="color: white; shader: flat">
+        </a-entity>
+
+      </a-entity> -->
+  </a-scene>
+
+</body>
+</html>
