@@ -35,28 +35,26 @@
   init: function () {
     var mainX = this.data.xPos;
     var mainZ = this.data.zPos;
-
-    // var currentX = this.el.getAttribute('position').x;
-    // var currentZ = this.el.getAttribute('position').z;
-
-
     this.xzArray = [mainX - 2, mainX + 2, mainZ - 2, mainZ + 2];
-
- 
-    // if(((this.xzArray[0] < currentX) && (this.xzArray[1] > currentX)) ||  ((this.xzArray[2] < currentZ) && (this.xzArray[3] > currentZ))){
-    //   console.log('within distance');
-    // } else {
-    //   console.log('not');
-    // }
 
   }, 
   tick: function(){
+    
     var currentX = this.el.components.camera.camera.parent.position.x;
+    
     var currentZ = this.el.components.camera.camera.parent.position.z;
 
+    // console.log(this.xzArray);
+    // console.log(currentX);
+
+    // console.log(currentZ);
+
+    // console.log('current X: ' + currentX);
+    // console.log('first x coordinate less than currentX: ' + this.xzArray[0]);
+    // console.log('second x coordinate greater than currentX: ' + this.xzArray[1]);
 
 
-        if(((this.xzArray[0] < currentX) && (this.xzArray[1] > currentX)) ||  ((this.xzArray[2] < currentZ) && (this.xzArray[3] > currentZ))){
+    if(((currentX > this.xzArray[0] ) && (currentX < this.xzArray[1] )) &&  ((currentZ > this.xzArray[2] ) && (currentZ < this.xzArray[3] ))){
       console.log('within distance');
     } else {
       console.log('not');
